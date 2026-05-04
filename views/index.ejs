@@ -1,0 +1,130 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div class="container">
+    <h1>Find a trusted tradesperson in minutes</h1>
+    <p>Post your job and Ringatrade will help connect you with a suitable local tradesperson.</p>
+    
+    <div class="hero-search">
+      <select name="trade" id="hero-trade" required>
+        <option value="" disabled selected>What trade do you need?</option>
+        <option value="Plumber">Plumber</option>
+        <option value="Electrician">Electrician</option>
+        <option value="Roofer">Roofer</option>
+        <option value="Builder">Builder</option>
+        <option value="Gardener">Gardener</option>
+        <option value="Painter & Decorator">Painter & Decorator</option>
+        <option value="Locksmith">Locksmith</option>
+        <option value="Heating Engineer">Heating Engineer</option>
+        <option value="Other">Other</option>
+      </select>
+      <input type="text" id="hero-postcode" placeholder="Your postcode (e.g. SW1A 1AA)" required>
+      <button class="btn btn-primary" onclick="window.location.href='/post-job'">Find a Trade</button>
+    </div>
+    
+    <div class="hero-cta" style="margin-top: 2rem;">
+      <a href="/post-job" class="btn btn-primary">Post a Job</a>
+      <a href="/tradespeople" class="btn btn-secondary">Join as a Tradesperson</a>
+    </div>
+  </div>
+</section>
+
+<section class="trust-section">
+  <div class="trust-grid">
+    <div class="trust-card">
+      <div class="trust-icon">⚡</div>
+      <h3>Fast response</h3>
+      <p>Get connected with tradespeople quickly to get your job sorted.</p>
+    </div>
+    <div class="trust-card">
+      <div class="trust-icon">📍</div>
+      <h3>Local trades</h3>
+      <p>We match you with professionals working right in your area.</p>
+    </div>
+    <div class="trust-card">
+      <div class="trust-icon">📝</div>
+      <h3>Simple job request</h3>
+      <p>Tell us what you need in seconds, without any complicated forms.</p>
+    </div>
+    <div class="trust-card">
+      <div class="trust-icon">🤝</div>
+      <h3>No obligation</h3>
+      <p>Free to use, and you decide who to hire.</p>
+    </div>
+  </div>
+</section>
+
+<section class="trades-section" style="background: var(--bg-light);">
+  <div class="container">
+    <h2 class="text-center mb-2" style="font-size: 2rem; color: var(--primary-color);">Popular Trades</h2>
+    <div class="trades-grid">
+      <a href="/post-job?trade=Plumber" class="trade-item">Plumber</a>
+      <a href="/post-job?trade=Electrician" class="trade-item">Electrician</a>
+      <a href="/post-job?trade=Roofer" class="trade-item">Roofer</a>
+      <a href="/post-job?trade=Builder" class="trade-item">Builder</a>
+      <a href="/post-job?trade=Gardener" class="trade-item">Gardener</a>
+      <a href="/post-job?trade=Painter" class="trade-item">Painter & Decorator</a>
+      <a href="/post-job?trade=Locksmith" class="trade-item">Locksmith</a>
+      <a href="/post-job?trade=Heating" class="trade-item">Heating Engineer</a>
+    </div>
+  </div>
+</section>
+
+<section class="container" style="text-align: center; margin: 4rem auto;">
+  <h2>Talk to Ringatrade</h2>
+  <p style="max-width: 600px; margin: 1rem auto 2rem; color: var(--text-muted);">
+    Experience the future of tradesperson matching. Speak directly to our AI assistant to get your job sorted.
+  </p>
+  <button class="btn btn-accent" style="font-size: 1.2rem; padding: 1rem 2.5rem; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px;" onclick="openVoiceModal()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+    Talk to Ringatrade
+  </button>
+</section>
+
+<!-- Voice Agent Modal -->
+<div id="voiceModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeVoiceModal()">&times;</button>
+    
+    <div style="text-align: center; padding: 2rem 1rem;">
+      <div style="background: var(--bg-light); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--primary-color);">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+      </div>
+      
+      <h2 style="color: var(--primary-color); margin-bottom: 1rem;">Voice Assistant Coming Soon</h2>
+      
+      <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem;">
+        We are currently upgrading our system. Soon, you will be able to speak your job request directly to our AI!
+      </p>
+      
+      <div style="background: #f8fafc; padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border: 1px dashed var(--border-color);">
+        <p style="font-weight: 500; margin-bottom: 0.5rem;">For now, please use our quick manual form.</p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">It takes less than a minute to complete.</p>
+      </div>
+      
+      <a href="/post-job" class="btn btn-primary btn-block" style="font-size: 1.1rem; padding: 1rem;">Post a Job Manually</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openVoiceModal() {
+    document.getElementById('voiceModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent scrolling
+  }
+  
+  function closeVoiceModal() {
+    document.getElementById('voiceModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  
+  // Close when clicking outside the modal content
+  window.onclick = function(event) {
+    const modal = document.getElementById('voiceModal');
+    if (event.target == modal) {
+      closeVoiceModal();
+    }
+  }
+</script>
+
+<%- include('partials/footer') %>

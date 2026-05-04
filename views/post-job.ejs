@@ -1,0 +1,83 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+  <div class="form-container">
+    <h1 class="text-center mb-1" style="color: var(--primary-color);">Post a Job</h1>
+    <p class="text-center text-muted mb-2">Tell us what you need, and we'll match you with a local tradesperson.</p>
+    
+    <form action="/post-job" method="POST">
+      <div class="form-group">
+        <label for="trade">Trade Needed <span style="color: red;">*</span></label>
+        <select id="trade" name="trade" class="form-control" required>
+          <option value="" disabled selected>Select a trade</option>
+          <option value="Plumber">Plumber</option>
+          <option value="Electrician">Electrician</option>
+          <option value="Roofer">Roofer</option>
+          <option value="Builder">Builder</option>
+          <option value="Gardener">Gardener</option>
+          <option value="Painter & Decorator">Painter & Decorator</option>
+          <option value="Locksmith">Locksmith</option>
+          <option value="Heating Engineer">Heating Engineer</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="job_description">Job Description <span style="color: red;">*</span></label>
+        <textarea id="job_description" name="job_description" class="form-control" placeholder="Please describe the work you need done..." required></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="postcode">Postcode <span style="color: red;">*</span></label>
+        <input type="text" id="postcode" name="postcode" class="form-control" placeholder="e.g. SW1A 1AA" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="urgency">How urgent is this? <span style="color: red;">*</span></label>
+        <select id="urgency" name="urgency" class="form-control" required>
+          <option value="" disabled selected>Select urgency</option>
+          <option value="Emergency">Emergency (ASAP)</option>
+          <option value="Today">Today</option>
+          <option value="This week">This week</option>
+          <option value="Flexible">Flexible</option>
+        </select>
+      </div>
+
+      <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border-color);">
+      <h3 class="mb-1">Your Details</h3>
+      
+      <div class="form-group">
+        <label for="customer_name">Name <span style="color: red;">*</span></label>
+        <input type="text" id="customer_name" name="customer_name" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Phone Number <span style="color: red;">*</span></label>
+        <input type="tel" id="phone" name="phone" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="Optional but recommended">
+      </div>
+      
+      <div class="form-group">
+        <label for="preferred_contact_method">Preferred Contact Method</label>
+        <select id="preferred_contact_method" name="preferred_contact_method" class="form-control">
+          <option value="Phone">Phone Call</option>
+          <option value="Email">Email</option>
+          <option value="WhatsApp">WhatsApp</option>
+        </select>
+      </div>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" id="consent" name="consent" required>
+        <label for="consent">I agree for Ringatrade to contact me about this job and share my details with relevant tradespeople. <span style="color: red;">*</span></label>
+      </div>
+      
+      <button type="submit" class="btn btn-primary btn-block" style="font-size: 1.1rem; padding: 1rem;">Submit Job Request</button>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

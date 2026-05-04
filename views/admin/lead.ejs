@@ -1,0 +1,120 @@
+<%- include('partials/header') %>
+
+<div style="margin-bottom: 1rem;">
+  <a href="/admin" style="color: var(--text-muted); text-decoration: none;">&larr; Back to Dashboard</a>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+  <div>
+    <h1 style="margin-bottom: 0.5rem;">Lead #<%= lead.id %>: <%= lead.trade %></h1>
+    <p style="color: var(--text-muted);">
+      Source: <strong><%= lead.source %></strong> | 
+      Date: <%= new Date(lead.created_at).toLocaleString() %>
+    </p>
+  </div>
+  
+  <div style="display: flex; gap: 1rem;">
+    <form action="/admin/leads/<%= lead.id %>/trigger" method="POST" style="display: inline;">
+      <input type="hidden" name="action" value="n8n">
+      <button class="btn btn-secondary" style="padding: 0.5rem 1rem;">Send to n8n</button>
+    </form>
+    <form action="/admin/leads/<%= lead.id %>/trigger" method="POST" style="display: inline;">
+      <input type="hidden" name="action" value="agent_zero">
+      <button class="btn btn-secondary" style="padding: 0.5rem 1rem;">Send to Agent Zero</button>
+    </form>
+    <form action="/admin/leads/<%= lead.id %>/trigger" method="POST" style="display: inline;">
+      <input type="hidden" name="action" value="voice_call">
+      <button class="btn btn-accent" style="padding: 0.5rem 1rem;">Trigger Voice Call</button>
+    </form>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  
+  <!-- Left Column -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    
+    <!-- Customer Info -->
+    <div style="background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-sm);">
+      <h3 style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">Customer Details</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div><strong>Name:</strong> <%= lead.customer_name %></div>
+        <div><strong>Phone:</strong> <a href="tel:<%= lead.phone %>"><%= lead.phone %></a></div>
+        <div><strong>Email:</strong> <%= lead.email || 'N/A' %></div>
+        <div><strong>Postcode:</strong> <%= lead.postcode %></div>
+        <div><strong>Pref. Contact:</strong> <%= lead.preferred_contact_method %></div>
+        <div><strong>Pref. Time:</strong> <%= lead.preferred_callback_time || 'N/A' %></div>
+      </div>
+    </div>
+    
+    <!-- Job Info -->
+    <div style="background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-sm);">
+      <h3 style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">Job Information</h3>
+      <p><strong>Trade Needed:</strong> <%= lead.trade %></p>
+      <p style="margin-top: 0.5rem;"><strong>Urgency:</strong> 
+        <span style="color: <%= lead.urgency === 'Emergency' ? 'red' : 'inherit' %>;"><%= lead.urgency %></span>
+      </p>
+      <div style="margin-top: 1rem;">
+        <strong>Description:</strong>
+        <div style="background: var(--bg-light); padding: 1rem; border-radius: var(--radius); margin-top: 0.5rem; white-space: pre-wrap;"><%= lead.job_description %></div>
+      </div>
+    </div>
+    
+    <!-- AI Data -->
+    <div style="background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-sm);">
+      <h3 style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">AI Data (Agent Zero / Voice)</h3>
+      <p><strong>Lead Quality:</strong> <%= lead.lead_quality || 'Pending' %></p>
+      <p style="margin-top: 0.5rem;"><strong>Missing Details:</strong> <%= lead.missing_details || 'None identified' %></p>
+      
+      <% if (lead.ai_summary) { %>
+        <div style="margin-top: 1rem;">
+          <strong>AI Summary:</strong>
+          <div style="background: #eef2ff; padding: 1rem; border-radius: var(--radius); margin-top: 0.5rem; white-space: pre-wrap;"><%= lead.ai_summary %></div>
+        </div>
+      <% } %>
+      
+      <% if (lead.transcript) { %>
+        <div style="margin-top: 1rem;">
+          <strong>Voice Transcript:</strong>
+          <div style="background: #f1f5f9; padding: 1rem; border-radius: var(--radius); margin-top: 0.5rem; white-space: pre-wrap; font-family: monospace; font-size: 0.9rem; max-height: 200px; overflow-y: auto;"><%= lead.transcript %></div>
+        </div>
+      <% } %>
+    </div>
+    
+  </div>
+  
+  <!-- Right Column -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    
+    <!-- Status Update Form -->
+    <div style="background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-sm);">
+      <h3 style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">Manage Lead</h3>
+      
+      <form action="/admin/leads/<%= lead.id %>/update" method="POST">
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select name="status" id="status" class="form-control">
+            <% const statuses = ['New', 'Qualified', 'Contacted', 'Sent to Tradesperson', 'Voice Call Started', 'Accepted by Tradesperson', 'Rejected by Tradesperson', 'Customer Contacted', 'Won', 'Lost']; %>
+            <% statuses.forEach(s => { %>
+              <option value="<%= s %>" <%= lead.status === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="notes">Internal Notes</label>
+          <textarea name="notes" id="notes" class="form-control" style="min-height: 150px;"><%= lead.notes || '' %></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block">Save Updates</button>
+      </form>
+      
+      <form action="/admin/leads/<%= lead.id %>/delete" method="POST" style="margin-top: 2rem;" onsubmit="return confirm('Are you sure you want to delete this lead? This cannot be undone.');">
+        <button type="submit" class="btn" style="background: transparent; color: #dc2626; border: 1px solid #dc2626; width: 100%;">Delete Lead</button>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<%- include('partials/footer') %>

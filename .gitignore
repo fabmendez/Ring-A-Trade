@@ -1,0 +1,4 @@
+node_modules/
+.env
+ringatrade.db
+.DS_Store

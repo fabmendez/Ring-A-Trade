@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding-top: 4rem; padding-bottom: 4rem; text-align: center; max-width: 600px;">
+  <div style="font-size: 4rem; color: var(--secondary-color); margin-bottom: 1rem;">✅</div>
+  <h1 style="color: var(--primary-color); margin-bottom: 1rem;">Success</h1>
+  <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem;">
+    <%= message || 'Thanks — we’ve received your request.' %>
+  </p>
+  <a href="/" class="btn btn-primary">Return to Homepage</a>
+</div>
+
+<%- include('partials/footer') %>

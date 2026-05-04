@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <h1 style="color: var(--primary-color);">Get more local job enquiries</h1>
+    <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 1rem auto 0;">
+      Receive relevant local leads. No complicated setup. Perfect for plumbers, electricians, roofers, builders, and other trades.
+    </p>
+  </div>
+
+  <div class="form-container" style="margin-top: 0;">
+    <form action="/tradespeople" method="POST">
+      <div class="form-group">
+        <label for="business_name">Business Name <span style="color: red;">*</span></label>
+        <input type="text" id="business_name" name="business_name" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="contact_name">Contact Name <span style="color: red;">*</span></label>
+        <input type="text" id="contact_name" name="contact_name" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="trade">Primary Trade <span style="color: red;">*</span></label>
+        <input type="text" id="trade" name="trade" class="form-control" placeholder="e.g. Plumber, Electrician" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="area_covered">Postcode / Area Covered <span style="color: red;">*</span></label>
+        <input type="text" id="area_covered" name="area_covered" class="form-control" placeholder="e.g. Manchester, M1-M9" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Phone Number <span style="color: red;">*</span></label>
+        <input type="tel" id="phone" name="phone" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email Address <span style="color: red;">*</span></label>
+        <input type="email" id="email" name="email" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="notes">Any questions or notes? (Optional)</label>
+        <textarea id="notes" name="notes" class="form-control" style="min-height: 80px;"></textarea>
+      </div>
+      
+      <button type="submit" class="btn btn-primary btn-block" style="font-size: 1.1rem; padding: 1rem;">Register Interest</button>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
