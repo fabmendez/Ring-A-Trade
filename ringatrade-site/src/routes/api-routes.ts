@@ -38,6 +38,55 @@ router.post("/voice-lead", (req, res) => {
   res.json({ success: true, lead_id: result.lastInsertRowid });
 });
 
+router.post("/submit-voice-lead", async (req, res) => {
+  const {
+    trade, urgency, job_description, postcode,
+    customer_name, phone, email, preferred_contact_method
+  } = req.body;
+
+  if (!trade || !job_description || !postcode || !customer_name || !phone) {
+    return res.status(400).json({ success: false, error: "Missing required fields" });
+  }
+
+  // Save to DB
+  const stmt = db.prepare(`
+    INSERT INTO leads (
+      source, trade, job_description, postcode, urgency,
+      customer_name, phone, email, preferred_contact_method, status
+    ) VALUES ('voice_intake', ?, ?, ?, ?, ?, ?, ?, ?, 'New')
+  `);
+
+  try {
+    const result = stmt.run(
+      trade, job_description, postcode, urgency || null,
+      customer_name, phone, email || null, preferred_contact_method || null
+    );
+
+    // Send to n8n webhook
+    const webhookUrl = process.env.N8N_LEAD_WEBHOOK_URL;
+    if (webhookUrl) {
+      const payload = {
+        source: "voice_intake",
+        lead_id: result.lastInsertRowid,
+        trade, urgency, job_description, postcode,
+        customer_name, phone, email, preferred_contact_method
+      };
+      
+      // Fire and forget
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(err => console.error("Webhook error:", err));
+    }
+
+    res.json({ success: true, lead_id: result.lastInsertRowid });
+  } catch (err) {
+    console.error("DB Insert error:", err);
+    res.status(500).json({ success: false, error: "Database error" });
+  }
+});
+
 router.post("/update-lead-status", (req, res) => {
   const { lead_id, status, notes } = req.body;
 

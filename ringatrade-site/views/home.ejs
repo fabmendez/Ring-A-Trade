@@ -131,7 +131,7 @@
         <div class="voice-content">
           <h2>Talk to Ringatrade</h2>
           <p>Prefer to explain the job out loud? Our voice assistant can help collect the information we need and move your request forward.</p>
-          <button class="btn btn-white btn-lg" onclick="startVoiceSession()">
+          <button class="btn btn-white btn-lg" onclick="openVoiceModal()">
             Talk to Ringatrade
           </button>
         </div>
@@ -147,18 +147,62 @@
 
 <!-- Voice Modal -->
 <div class="modal-overlay" id="voiceModal" style="display:none">
-  <div class="modal" onclick="event.stopPropagation()">
-    <button class="modal-close" onclick="stopVoiceSession(); document.getElementById('voiceModal').style.display='none'">&times;</button>
-    <h2>Talk to Ringatrade</h2>
-    <div class="voice-visual" style="margin: 2rem 0; background: none; box-shadow: none;">
-      <div class="voice-wave" style="margin: 0 auto;">
-        <span></span><span></span><span></span><span></span><span></span>
+  <div class="modal" id="voiceModalContent" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeVoiceModal()">&times;</button>
+    
+    <!-- Step 1: Initial Setup -->
+    <div id="voiceStep1">
+      <h2>Talk to Ringatrade</h2>
+      <p style="margin-bottom: 1rem;">Enter your basic details to start the voice intake.</p>
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label>Postcode</label>
+        <input type="text" id="voiceSetupPostcode" class="form-control" required>
+      </div>
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label>Phone Number</label>
+        <input type="tel" id="voiceSetupPhone" class="form-control" required>
+      </div>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">By continuing, you agree to the Terms & Privacy Policy.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="initVoiceSession()">Start Voice Intake</button>
       </div>
     </div>
-    <p id="voice-status" style="font-weight: bold; margin-bottom: 1.5rem; color: var(--primary-color);">Connecting...</p>
-    <div class="modal-actions">
-      <a href="/post-a-job" class="btn btn-primary" onclick="stopVoiceSession()">Post Job Using Form</a>
+
+    <!-- Step 2: Voice Session -->
+    <div id="voiceStep2" style="display:none; text-align: center;">
+      <h2>Talk to Ringatrade</h2>
+      <div class="voice-visual" style="margin: 2rem 0; background: none; box-shadow: none;">
+        <div class="voice-wave" style="margin: 0 auto;">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <p id="voice-status" style="font-weight: bold; margin-bottom: 1.5rem; color: var(--primary-color);">Connecting...</p>
+      <div class="modal-actions" style="justify-content: center;">
+        <a href="/post-a-job" class="btn btn-outline" style="border: 1px solid #ccc;" onclick="closeVoiceModal()">Prefer to type instead? Post a Job</a>
+      </div>
     </div>
+
+    <!-- Step 3: Final Confirmation -->
+    <div id="voiceStep3" style="display:none;">
+      <h2>Confirm Details</h2>
+      <p style="margin-bottom: 1rem;">Please review and edit your job request before submitting.</p>
+      <form id="voiceSummaryForm" onsubmit="submitVoiceJob(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; text-align: left;">
+          <div><label style="font-weight:bold; font-size: 0.9rem;">Trade</label><input type="text" id="v_trade" class="form-control" required></div>
+          <div><label style="font-weight:bold; font-size: 0.9rem;">Urgency</label><input type="text" id="v_urgency" class="form-control" required></div>
+          <div style="grid-column: span 2;"><label style="font-weight:bold; font-size: 0.9rem;">Job Description</label><textarea id="v_desc" class="form-control" rows="2" required></textarea></div>
+          <div><label style="font-weight:bold; font-size: 0.9rem;">Postcode</label><input type="text" id="v_postcode" class="form-control" required></div>
+          <div><label style="font-weight:bold; font-size: 0.9rem;">Customer Name</label><input type="text" id="v_name" class="form-control" required></div>
+          <div><label style="font-weight:bold; font-size: 0.9rem;">Phone</label><input type="text" id="v_phone" class="form-control" required></div>
+          <div><label style="font-weight:bold; font-size: 0.9rem;">Email (Optional)</label><input type="email" id="v_email" class="form-control"></div>
+          <div style="grid-column: span 2;"><label style="font-weight:bold; font-size: 0.9rem;">Preferred Contact</label><input type="text" id="v_contact" class="form-control" required></div>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" id="btnVoiceSubmit" style="width: 100%;">Submit Job Request</button>
+        </div>
+      </form>
+    </div>
+
   </div>
 </div>
 

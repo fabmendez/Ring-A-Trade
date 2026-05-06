@@ -5,7 +5,7 @@ import { logger } from "./lib/logger.js";
 const GEMINI_HOST = "generativelanguage.googleapis.com";
 const MODEL = "models/gemini-2.0-flash-exp"; // or gemini-2.0-flash
 
-const systemInstruction = `
+const systemInstruction = (postcode: string, phone: string) => \`
 You are the Ringatrade voice assistant.
 Your job is to help customers describe a trade job and collect enough information to match them with a suitable tradesperson.
 
@@ -15,19 +15,21 @@ Do not over-explain.
 Do not promise a fixed price.
 Do not guarantee availability.
 
+The user's postcode is: \${postcode}
+The user's phone number is: \${phone}
+Do not ask for their postcode or phone number again unless you need to confirm them.
+
 Collect the following details:
 1. Trade needed
 2. Job description
-3. Postcode
-4. Urgency
-5. Customer name
-6. Phone number
-7. Email (optional)
-8. Preferred contact method
+3. Urgency
+4. Customer name
+5. Email (optional)
+6. Preferred contact method
 
 Confirm details before submission.
 Once confirmed, you MUST call the "submit_lead" function to submit the job.
-`;
+\`;
 
 const tools = [
   {
@@ -59,7 +61,7 @@ export function setupVoiceWebSocket(server: Server) {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on("upgrade", (request, socket, head) => {
-    if (request.url === "/ws/voice") {
+    if (request.url && request.url.startsWith("/ws/voice")) {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit("connection", ws, request);
       });
@@ -76,7 +78,12 @@ export function setupVoiceWebSocket(server: Server) {
       return;
     }
 
-    const url = `wss://${GEMINI_HOST}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${apiKey}`;
+    // Extract postcode and phone from URL
+    const urlObj = new URL(request.url || "", \`http://\${request.headers.host}\`);
+    const postcode = urlObj.searchParams.get("postcode") || "";
+    const phone = urlObj.searchParams.get("phone") || "";
+
+    const url = \`wss://\${GEMINI_HOST}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=\${apiKey}\`;
     const geminiWs = new WebSocket(url);
 
     let setupCompleted = false;
@@ -89,7 +96,7 @@ export function setupVoiceWebSocket(server: Server) {
         setup: {
           model: MODEL,
           systemInstruction: {
-            parts: [{ text: systemInstruction }]
+            parts: [{ text: systemInstruction(postcode, phone) }]
           },
           tools: tools,
           generationConfig: {
@@ -129,26 +136,11 @@ export function setupVoiceWebSocket(server: Server) {
         if (call.name === "submit_lead") {
           logger.info({ args: call.args }, "Gemini invoked submit_lead");
           
-          // Submit the lead to the webhook
-          const webhookUrl = process.env.VITE_N8N_VOICE_INTAKE_WEBHOOK;
-          if (webhookUrl) {
-            try {
-              const payload = {
-                source: "voice_intake",
-                ...call.args,
-                transcript: "Voice transcript via Gemini",
-                confidence: 1.0
-              };
-              await fetch(webhookUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-              });
-              logger.info("Lead sent to n8n webhook");
-            } catch (err) {
-              logger.error({ err }, "Error sending lead to webhook");
-            }
-          }
+          // Send the extracted arguments directly to the frontend for final review
+          clientWs.send(JSON.stringify({ 
+            type: "tool_submit_lead", 
+            data: call.args 
+          }));
 
           // Reply to Gemini with function response
           geminiWs.send(JSON.stringify({
@@ -156,13 +148,17 @@ export function setupVoiceWebSocket(server: Server) {
               functionResponses: [{
                 id: call.id,
                 name: call.name,
-                response: { result: "Success, the lead has been submitted to the database." }
+                response: { result: "Success, returning control to frontend UI." }
               }]
             }
           }));
 
-          // Notify frontend
-          clientWs.send(JSON.stringify({ type: "submitted" }));
+          // Close Gemini connection since data collection is finished
+          setTimeout(() => {
+            if (geminiWs.readyState === WebSocket.OPEN) {
+              geminiWs.close();
+            }
+          }, 1000);
         }
       }
 

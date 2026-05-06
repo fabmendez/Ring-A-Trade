@@ -4,6 +4,34 @@ let mediaStream = null;
 let audioWorkletNode = null;
 let isRecording = false;
 
+// Step logic
+function openVoiceModal() {
+  document.getElementById('voiceModal').style.display = 'flex';
+  document.getElementById('voiceStep1').style.display = 'block';
+  document.getElementById('voiceStep2').style.display = 'none';
+  document.getElementById('voiceStep3').style.display = 'none';
+}
+
+function closeVoiceModal() {
+  stopVoiceSession();
+  document.getElementById('voiceModal').style.display = 'none';
+}
+
+async function initVoiceSession() {
+  const postcode = document.getElementById('voiceSetupPostcode').value.trim();
+  const phone = document.getElementById('voiceSetupPhone').value.trim();
+  
+  if (!postcode || !phone) {
+    alert("Please enter both your postcode and phone number to continue.");
+    return;
+  }
+
+  document.getElementById('voiceStep1').style.display = 'none';
+  document.getElementById('voiceStep2').style.display = 'block';
+  
+  startVoiceSession(postcode, phone);
+}
+
 // Convert Float32Array to Int16Array for PCM
 function floatTo16BitPCM(input) {
   const output = new Int16Array(input.length);
@@ -14,7 +42,6 @@ function floatTo16BitPCM(input) {
   return output;
 }
 
-// Convert Int16Array to Base64
 function bufferToBase64(buffer) {
   let binary = '';
   const bytes = new Uint8Array(buffer.buffer);
@@ -24,7 +51,6 @@ function bufferToBase64(buffer) {
   return btoa(binary);
 }
 
-// Convert Base64 back to Float32Array for playback
 function base64ToFloat32Array(base64) {
   const binaryString = atob(base64);
   const bytes = new Uint8Array(binaryString.length);
@@ -52,8 +78,7 @@ function updateState(state) {
   }
 }
 
-async function startVoiceSession() {
-  document.getElementById("voiceModal").style.display = "flex";
+async function startVoiceSession(postcode, phone) {
   updateState("Connecting...");
 
   try {
@@ -63,12 +88,12 @@ async function startVoiceSession() {
     return;
   }
 
-  // Use 16000 Hz which is required by Gemini Multimodal Live API
   audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
   await audioContext.audioWorklet.addModule('/js/pcm-processor.js');
 
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  ws = new WebSocket(`${protocol}//${window.location.host}/ws/voice`);
+  const wsUrl = `${protocol}//${window.location.host}/ws/voice?postcode=${encodeURIComponent(postcode)}&phone=${encodeURIComponent(phone)}`;
+  ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {
     updateState("Processing...");
@@ -84,12 +109,11 @@ async function startVoiceSession() {
     } else if (msg.type === "audio") {
       updateState("Listening...");
       playAudio(msg.data);
-    } else if (msg.type === "submitted") {
-      updateState("Submitted! Thank you.");
-      isRecording = false;
-      setTimeout(() => {
-        stopVoiceSession();
-      }, 3000);
+    } else if (msg.type === "tool_submit_lead") {
+      // Gemini has finished collecting data
+      updateState("Confirming Details...");
+      stopVoiceSession(); // End audio
+      showSummaryScreen(msg.data);
     } else if (msg.type === "error") {
       updateState("Error: " + msg.message);
     }
@@ -108,7 +132,7 @@ function startStreaming() {
   audioWorkletNode = new AudioWorkletNode(audioContext, "pcm-processor");
   
   audioWorkletNode.port.onmessage = (event) => {
-    if (!isRecording || ws.readyState !== WebSocket.OPEN) return;
+    if (!isRecording || !ws || ws.readyState !== WebSocket.OPEN) return;
     
     const float32Data = event.data;
     const pcm16Data = floatTo16BitPCM(float32Data);
@@ -149,5 +173,61 @@ function stopVoiceSession() {
   if (audioContext) {
     audioContext.close();
     audioContext = null;
+  }
+}
+
+function showSummaryScreen(data) {
+  document.getElementById('voiceStep2').style.display = 'none';
+  document.getElementById('voiceStep3').style.display = 'block';
+
+  document.getElementById('v_trade').value = data.trade || '';
+  document.getElementById('v_urgency').value = data.urgency || '';
+  document.getElementById('v_desc').value = data.job_description || '';
+  document.getElementById('v_postcode').value = data.postcode || document.getElementById('voiceSetupPostcode').value;
+  document.getElementById('v_name').value = data.customer_name || '';
+  document.getElementById('v_phone').value = data.phone || document.getElementById('voiceSetupPhone').value;
+  document.getElementById('v_email').value = data.email || '';
+  document.getElementById('v_contact').value = data.preferred_contact_method || '';
+}
+
+async function submitVoiceJob(event) {
+  event.preventDefault();
+  const btn = document.getElementById('btnVoiceSubmit');
+  btn.disabled = true;
+  btn.innerText = "Submitting...";
+
+  const payload = {
+    trade: document.getElementById('v_trade').value,
+    urgency: document.getElementById('v_urgency').value,
+    job_description: document.getElementById('v_desc').value,
+    postcode: document.getElementById('v_postcode').value,
+    customer_name: document.getElementById('v_name').value,
+    phone: document.getElementById('v_phone').value,
+    email: document.getElementById('v_email').value,
+    preferred_contact_method: document.getElementById('v_contact').value
+  };
+
+  try {
+    const res = await fetch('/api/submit-voice-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    if (res.ok) {
+      document.getElementById('voiceStep3').innerHTML = `
+        <div style="text-align:center; padding: 2rem;">
+          <h2 style="color: green;">✓ Submitted Successfully</h2>
+          <p>We'll be in touch shortly!</p>
+          <button class="btn btn-primary" onclick="closeVoiceModal()" style="margin-top: 1rem;">Close</button>
+        </div>
+      `;
+    } else {
+      throw new Error("Submission failed");
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerText = "Submit Job Request";
+    alert("There was an error submitting your request. Please try again.");
   }
 }
