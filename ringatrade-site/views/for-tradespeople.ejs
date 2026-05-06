@@ -1,0 +1,121 @@
+<%- include('partials/header') %>
+
+<main class="page-main">
+  <div class="container">
+    <div class="page-header centered">
+      <h1>Get more local job enquiries</h1>
+      <p>Join Ringatrade and receive relevant local leads straight to your phone or email.</p>
+    </div>
+
+    <div class="tp-layout">
+      <div class="tp-benefits">
+        <h2>Why join Ringatrade?</h2>
+        <div class="benefit-list">
+          <div class="benefit">
+            <div class="benefit-icon">📬</div>
+            <div>
+              <h3>Receive relevant local leads</h3>
+              <p>Get job enquiries from homeowners and businesses in your area who need your trade.</p>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit-icon">⚙️</div>
+            <div>
+              <h3>No complicated setup</h3>
+              <p>Register your interest in a couple of minutes. No lengthy profiles or complicated processes.</p>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit-icon">🏆</div>
+            <div>
+              <h3>Good for all trades</h3>
+              <p>We work with plumbers, electricians, roofers, builders, and all other home trade professionals.</p>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit-icon">💷</div>
+            <div>
+              <h3>More work, less hassle</h3>
+              <p>Focus on the work you do best. We'll help bring the customers to you.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tp-form-col">
+        <% if (success) { %>
+          <div class="form-card">
+            <div class="success-message">
+              <div class="success-icon">✅</div>
+              <h2>Thanks for your interest!</h2>
+              <p>We've received your details and will be in touch soon about receiving leads in your area.</p>
+              <a href="/" class="btn btn-primary">Back to Home</a>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="form-card">
+            <h2>Register Your Interest</h2>
+            <p class="form-intro">Fill in your details below and we'll be in touch about connecting you with local job leads.</p>
+
+            <% if (errors && errors.length > 0) { %>
+              <div class="alert alert-error">
+                <ul>
+                  <% errors.forEach(err => { %>
+                    <li><%= err %></li>
+                  <% }) %>
+                </ul>
+              </div>
+            <% } %>
+
+            <form action="/for-tradespeople" method="POST" class="form">
+              <div class="form-group">
+                <label for="business_name" class="form-label">Business Name</label>
+                <input type="text" id="business_name" name="business_name" class="form-control" placeholder="Your trading name" value="<%= old.business_name || '' %>" />
+              </div>
+
+              <div class="form-group">
+                <label for="contact_name" class="form-label">Contact Name <span class="required">*</span></label>
+                <input type="text" id="contact_name" name="contact_name" class="form-control" placeholder="Your name" value="<%= old.contact_name || '' %>" required />
+              </div>
+
+              <div class="form-group">
+                <label for="trade" class="form-label">Your Trade <span class="required">*</span></label>
+                <select id="trade" name="trade" class="form-control" required>
+                  <option value="">Select your trade...</option>
+                  <% trades.forEach(t => { %>
+                    <option value="<%= t %>" <%= (old.trade === t) ? 'selected' : '' %>><%= t %></option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="area_covered" class="form-label">Area Covered <span class="required">*</span></label>
+                <input type="text" id="area_covered" name="area_covered" class="form-control" placeholder="e.g. Manchester, M14 area, Greater Manchester" value="<%= old.area_covered || '' %>" required />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="phone" class="form-label">Phone <span class="required">*</span></label>
+                  <input type="tel" id="phone" name="phone" class="form-control" placeholder="07xxx xxxxxx" value="<%= old.phone || '' %>" required />
+                </div>
+                <div class="form-group">
+                  <label for="email" class="form-label">Email <span class="required">*</span></label>
+                  <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" value="<%= old.email || '' %>" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="notes" class="form-label">Additional Notes</label>
+                <textarea id="notes" name="notes" class="form-control" rows="3" placeholder="Anything else we should know?"><%= old.notes || '' %></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg btn-full">Register Interest</button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

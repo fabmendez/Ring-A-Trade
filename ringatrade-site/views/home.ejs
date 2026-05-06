@@ -1,0 +1,166 @@
+<%- include('partials/header') %>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">UK Local Trade Marketplace</div>
+        <h1>Describe your job once.<br><span class="hero-highlight">Get matched with local tradespeople.</span></h1>
+        <p class="hero-sub">Tell Ringatrade what you need and we'll help connect you with suitable local tradespeople in your area — quickly, simply, and with no obligation.</p>
+        <div class="hero-actions">
+          <a href="/post-a-job" class="btn btn-primary btn-lg">Post a Job</a>
+          <button class="btn btn-outline-white btn-lg" onclick="document.getElementById('voiceModal').style.display='flex'">Talk to Ringatrade</button>
+        </div>
+      </div>
+      <!-- Quick Search -->
+      <div class="quick-search">
+        <h3>Find a tradesperson</h3>
+        <form action="/post-a-job" method="get" class="search-form">
+          <div class="search-fields">
+            <select name="trade" class="form-control">
+              <option value="">Select a trade&hellip;</option>
+              <% trades.forEach(trade => { %>
+                <option value="<%= trade %>"><%= trade %></option>
+              <% }) %>
+            </select>
+            <input type="text" name="postcode" placeholder="Enter your postcode" class="form-control" />
+            <button type="submit" class="btn btn-primary">Find a Tradesperson</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose -->
+  <section class="section trust-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why choose Ringatrade?</h2>
+        <p>Simple, fast, and built to reduce the hassle of finding help.</p>
+      </div>
+      <div class="cards-grid cards-4">
+        <div class="trust-card">
+          <div class="trust-icon">⚡</div>
+          <h3>Fast Response</h3>
+          <p>Post your job and we'll help get it in front of suitable local tradespeople.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon">📍</div>
+          <h3>Local Trades</h3>
+          <p>We connect you with tradespeople who cover your area.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon">✏️</div>
+          <h3>Simple Job Request</h3>
+          <p>Tell us what you need once — no endless calls or repeating yourself.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon">✅</div>
+          <h3>No Obligation</h3>
+          <p>You choose whether to go ahead. No pressure.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Trades -->
+  <section class="section trades-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Popular Trades</h2>
+        <p>Find help for common home and business jobs.</p>
+      </div>
+      <div class="trades-grid">
+        <% const tradeIcons = {
+          'Plumber': '🔧',
+          'Electrician': '⚡',
+          'Roofer': '🏠',
+          'Builder': '🧱',
+          'Gardener': '🌿',
+          'Painter & Decorator': '🎨',
+          'Locksmith': '🔑',
+          'Heating Engineer': '🔥',
+        }; %>
+        <% Object.entries(tradeIcons).forEach(([trade, icon]) => { %>
+          <a href="/post-a-job?trade=<%= encodeURIComponent(trade) %>" class="trade-card">
+            <div class="trade-icon"><%= icon %></div>
+            <span><%= trade %></span>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section steps-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>How Ringatrade Works</h2>
+        <p>Three simple steps to get the job moving.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Tell us the job</h3>
+          <p>Describe what you need, where you are, and any useful details.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>We review and match</h3>
+          <p>Your request is checked and matched with suitable local tradespeople.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>A tradesperson contacts you</h3>
+          <p>A local tradesperson gets in touch using your preferred contact method.</p>
+        </div>
+      </div>
+      <div class="section-cta">
+        <a href="/post-a-job" class="btn btn-primary btn-lg">Post a Job Now — It's Free</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Voice / Talk to Ringatrade -->
+  <section class="section voice-section">
+    <div class="container">
+      <div class="voice-card">
+        <div class="voice-content">
+          <h2>Talk to Ringatrade</h2>
+          <p>Prefer to explain the job out loud? Our voice assistant can help collect the information we need and move your request forward.</p>
+          <button class="btn btn-white btn-lg" onclick="startVoiceSession()">
+            Talk to Ringatrade
+          </button>
+        </div>
+        <div class="voice-visual" aria-hidden="true">
+          <div class="voice-wave">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Voice Modal -->
+<div class="modal-overlay" id="voiceModal" style="display:none">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="stopVoiceSession(); document.getElementById('voiceModal').style.display='none'">&times;</button>
+    <h2>Talk to Ringatrade</h2>
+    <div class="voice-visual" style="margin: 2rem 0; background: none; box-shadow: none;">
+      <div class="voice-wave" style="margin: 0 auto;">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <p id="voice-status" style="font-weight: bold; margin-bottom: 1.5rem; color: var(--primary-color);">Connecting...</p>
+    <div class="modal-actions">
+      <a href="/post-a-job" class="btn btn-primary" onclick="stopVoiceSession()">Post Job Using Form</a>
+    </div>
+  </div>
+</div>
+
+<script src="/js/voice.js"></script>
+<%- include('partials/footer') %>

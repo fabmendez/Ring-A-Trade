@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="admin-body">
+  <%- include('../partials/admin-nav', { active: 'leads' }) %>
+
+  <main class="admin-main">
+    <div class="admin-container">
+      <div class="admin-page-header">
+        <h1>All Leads</h1>
+      </div>
+
+      <!-- Filters -->
+      <form action="/admin/leads" method="GET" class="admin-filters">
+        <input type="text" name="search" placeholder="Search name, postcode, phone..." class="form-control filter-input" value="<%= filters.search || '' %>" />
+        <select name="status" class="form-control filter-select">
+          <option value="">All Statuses</option>
+          <% LEAD_STATUSES.forEach(s => { %>
+            <option value="<%= s %>" <%= filters.status === s ? 'selected' : '' %>><%= s %></option>
+          <% }) %>
+        </select>
+        <select name="trade" class="form-control filter-select">
+          <option value="">All Trades</option>
+          <% trades.forEach(t => { %>
+            <option value="<%= t %>" <%= filters.trade === t ? 'selected' : '' %>><%= t %></option>
+          <% }) %>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        <a href="/admin/leads" class="btn btn-outline btn-sm">Clear</a>
+      </form>
+
+      <% if (leads.length === 0) { %>
+        <div class="empty-state">
+          <p>No leads found matching your filters.</p>
+        </div>
+      <% } else { %>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Trade</th>
+                <th>Postcode</th>
+                <th>Urgency</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Source</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% leads.forEach(lead => { %>
+                <tr>
+                  <td><strong>#<%= lead.id %></strong></td>
+                  <td><%= new Date(lead.created_at).toLocaleDateString('en-GB') %></td>
+                  <td><%= lead.trade %></td>
+                  <td><%= lead.postcode %></td>
+                  <td><span class="urgency-badge urgency-<%= lead.urgency ? lead.urgency.toLowerCase().replace(/\s/g,'-') : 'flexible' %>"><%= lead.urgency %></span></td>
+                  <td><%= lead.customer_name %></td>
+                  <td><a href="tel:<%= lead.phone %>"><%= lead.phone %></a></td>
+                  <td><span class="status-badge status-<%= lead.status ? lead.status.toLowerCase().replace(/\s+/g,'-') : 'new' %>"><%= lead.status %></span></td>
+                  <td><small><%= lead.source %></small></td>
+                  <td><a href="/admin/leads/<%= lead.id %>" class="btn btn-sm btn-outline">View</a></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-count"><%= leads.length %> lead<%= leads.length !== 1 ? 's' : '' %> found</p>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

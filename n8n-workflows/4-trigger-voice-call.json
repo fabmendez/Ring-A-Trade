@@ -1,0 +1,95 @@
+{
+  "name": "4. Trigger Voice Call - Ringatrade",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "trigger-voice-call",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook: Trigger Voice Call",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "ringatrade-trigger-voice"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "phone_number",
+              "value": "={{$json.body.lead.phone}}"
+            },
+            {
+              "name": "customer_name",
+              "value": "={{$json.body.lead.customer_name}}"
+            },
+            {
+              "name": "context",
+              "value": "={{$json.body.lead.ai_summary || $json.body.lead.job_description}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Extract Call Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {},
+      "id": "3",
+      "name": "NoOp (Connect Vapi/ElevenLabs/Bland HTTP Request)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {},
+      "id": "4",
+      "name": "NoOp (HTTP POST to /api/update-lead-status)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Trigger Voice Call": {
+      "main": [
+        [
+          {
+            "node": "Extract Call Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Call Data": {
+      "main": [
+        [
+          {
+            "node": "NoOp (Connect Vapi/ElevenLabs/Bland HTTP Request)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NoOp (Connect Vapi/ElevenLabs/Bland HTTP Request)": {
+      "main": [
+        [
+          {
+            "node": "NoOp (HTTP POST to /api/update-lead-status)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

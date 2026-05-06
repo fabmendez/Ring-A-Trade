@@ -1,0 +1,80 @@
+{
+  "name": "1. New Lead - Ringatrade",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "new-lead",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook: New Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "ringatrade-new-lead"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "trade",
+              "value": "={{$json.body.trade}}"
+            },
+            {
+              "name": "postcode",
+              "value": "={{$json.body.postcode}}"
+            },
+            {
+              "name": "customer_name",
+              "value": "={{$json.body.customer.name}}"
+            },
+            {
+              "name": "phone",
+              "value": "={{$json.body.customer.phone}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Parse Lead Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {},
+      "id": "3",
+      "name": "NoOp (Connect your Email/SMS/Voice AI here)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: New Lead": {
+      "main": [
+        [
+          {
+            "node": "Parse Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Lead Data": {
+      "main": [
+        [
+          {
+            "node": "NoOp (Connect your Email/SMS/Voice AI here)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

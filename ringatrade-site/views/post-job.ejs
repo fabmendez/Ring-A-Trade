@@ -1,0 +1,113 @@
+<%- include('partials/header') %>
+
+<main class="page-main">
+  <div class="container container-narrow">
+    <div class="page-header">
+      <h1>Post a Job</h1>
+      <p>Tell us about your job and we'll help match you with a suitable local tradesperson.</p>
+    </div>
+
+    <% if (errors && errors.length > 0) { %>
+      <div class="alert alert-error">
+        <ul>
+          <% errors.forEach(err => { %>
+            <li><%= err %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <div class="form-card">
+      <form action="/post-a-job" method="POST" class="form">
+        <div class="form-section">
+          <h3>About the Job</h3>
+
+          <div class="form-group">
+            <label for="trade" class="form-label">Trade Needed <span class="required">*</span></label>
+            <select id="trade" name="trade" class="form-control" required>
+              <option value="">Select a trade...</option>
+              <% trades.forEach(t => { %>
+                <option value="<%= t %>" <%= (old.trade === t) ? 'selected' : '' %>><%= t %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="job_description" class="form-label">Job Description <span class="required">*</span></label>
+            <textarea id="job_description" name="job_description" class="form-control" rows="5" placeholder="Describe the job in as much detail as you can. What's the problem? What needs doing?" required><%= old.job_description || '' %></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="postcode" class="form-label">Postcode <span class="required">*</span></label>
+              <input type="text" id="postcode" name="postcode" class="form-control" placeholder="e.g. M14 5AB" value="<%= old.postcode || '' %>" required />
+            </div>
+
+            <div class="form-group">
+              <label for="urgency" class="form-label">Urgency <span class="required">*</span></label>
+              <select id="urgency" name="urgency" class="form-control" required>
+                <option value="">How urgent is it?</option>
+                <% urgencyOptions.forEach(opt => { %>
+                  <option value="<%= opt %>" <%= (old.urgency === opt) ? 'selected' : '' %>><%= opt %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Your Details</h3>
+
+          <div class="form-group">
+            <label for="customer_name" class="form-label">Your Name <span class="required">*</span></label>
+            <input type="text" id="customer_name" name="customer_name" class="form-control" placeholder="Full name" value="<%= old.customer_name || '' %>" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone" class="form-label">Phone Number <span class="required">*</span></label>
+              <input type="tel" id="phone" name="phone" class="form-control" placeholder="07xxx xxxxxx" value="<%= old.phone || '' %>" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email" class="form-label">Email Address <span class="optional">(optional)</span></label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" value="<%= old.email || '' %>" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Preferred Contact Method</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="preferred_contact_method" value="Phone" <%= (old.preferred_contact_method === 'Phone' || !old.preferred_contact_method) ? 'checked' : '' %> />
+                Phone
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="preferred_contact_method" value="Email" <%= (old.preferred_contact_method === 'Email') ? 'checked' : '' %> />
+                Email
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="preferred_contact_method" value="WhatsApp" <%= (old.preferred_contact_method === 'WhatsApp') ? 'checked' : '' %> />
+                WhatsApp
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="consent" required <%= old.consent ? 'checked' : '' %> />
+              <span>I agree for Ringatrade to contact me about this job and share my details with relevant tradespeople.</span>
+            </label>
+          </div>
+        </div>
+
+        <p class="form-reassurance">Free to post. No obligation. We'll only share your details with relevant tradespeople.</p>
+        <button type="submit" class="btn btn-primary btn-lg btn-full">Get Matched With a Tradesperson</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

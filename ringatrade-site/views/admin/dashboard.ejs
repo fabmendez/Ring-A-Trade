@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="admin-body">
+  <%- include('../partials/admin-nav', { active: 'dashboard' }) %>
+
+  <main class="admin-main">
+    <div class="admin-container">
+      <div class="admin-page-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Welcome back, <%= adminUsername %>. Here's an overview of your leads.</p>
+        </div>
+        <a href="/post-a-job" target="_blank" class="btn btn-primary">View Public Site</a>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-grid">
+        <div class="stat-card stat-total">
+          <div class="stat-value"><%= stats.total %></div>
+          <div class="stat-label">Total Leads</div>
+        </div>
+        <div class="stat-card stat-new">
+          <div class="stat-value"><%= stats.new_leads %></div>
+          <div class="stat-label">New</div>
+        </div>
+        <div class="stat-card stat-qualified">
+          <div class="stat-value"><%= stats.qualified %></div>
+          <div class="stat-label">Qualified</div>
+        </div>
+        <div class="stat-card stat-sent">
+          <div class="stat-value"><%= stats.sent %></div>
+          <div class="stat-label">Sent to Tradesperson</div>
+        </div>
+        <div class="stat-card stat-won">
+          <div class="stat-value"><%= stats.won %></div>
+          <div class="stat-label">Won</div>
+        </div>
+        <div class="stat-card stat-lost">
+          <div class="stat-value"><%= stats.lost %></div>
+          <div class="stat-label">Lost</div>
+        </div>
+      </div>
+
+      <!-- Recent Leads -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <h2>Recent Leads</h2>
+          <a href="/admin/leads" class="btn btn-outline btn-sm">View All Leads</a>
+        </div>
+
+        <% if (recentLeads.length === 0) { %>
+          <div class="empty-state">
+            <p>No leads yet. They'll appear here once customers submit job requests.</p>
+          </div>
+        <% } else { %>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Date</th>
+                  <th>Trade</th>
+                  <th>Postcode</th>
+                  <th>Urgency</th>
+                  <th>Customer</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Source</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentLeads.forEach(lead => { %>
+                  <tr>
+                    <td><strong>#<%= lead.id %></strong></td>
+                    <td><%= new Date(lead.created_at).toLocaleDateString('en-GB') %></td>
+                    <td><%= lead.trade %></td>
+                    <td><%= lead.postcode %></td>
+                    <td><span class="urgency-badge urgency-<%= lead.urgency ? lead.urgency.toLowerCase().replace(/\s/g,'-') : 'flexible' %>"><%= lead.urgency %></span></td>
+                    <td><%= lead.customer_name %></td>
+                    <td><a href="tel:<%= lead.phone %>"><%= lead.phone %></a></td>
+                    <td><span class="status-badge status-<%= lead.status ? lead.status.toLowerCase().replace(/\s+/g,'-') : 'new' %>"><%= lead.status %></span></td>
+                    <td><%= lead.source %></td>
+                    <td><a href="/admin/leads/<%= lead.id %>" class="btn btn-sm btn-outline">View</a></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

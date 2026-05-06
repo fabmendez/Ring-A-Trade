@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="admin-body">
+  <div class="admin-login-wrap">
+    <div class="admin-login-card">
+      <div class="admin-login-logo">
+        <span class="logo-ring">Ring</span><span class="logo-trade">a</span><span class="logo-trade2">Trade</span>
+        <span class="admin-badge">Admin</span>
+      </div>
+      <h1>Sign in to Admin</h1>
+
+      <% if (error) { %>
+        <div class="alert alert-error"><%= error %></div>
+      <% } %>
+
+      <form action="/admin/login" method="POST" class="form">
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" name="username" class="form-control" autocomplete="username" required autofocus />
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" name="password" class="form-control" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-full">Sign In</button>
+      </form>
+
+      <div class="admin-login-back">
+        <a href="/">&larr; Back to Ringatrade</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

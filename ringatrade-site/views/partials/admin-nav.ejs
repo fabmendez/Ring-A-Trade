@@ -1,0 +1,14 @@
+<nav class="admin-nav">
+  <div class="admin-nav-inner">
+    <a href="/admin" class="admin-nav-logo">
+      <span class="logo-ring">Ring</span><span class="logo-trade">a</span><span class="logo-trade2">Trade</span>
+      <span class="admin-badge">Admin</span>
+    </a>
+    <div class="admin-nav-links">
+      <a href="/admin" class="admin-nav-link <%= active === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+      <a href="/admin/leads" class="admin-nav-link <%= active === 'leads' ? 'active' : '' %>">All Leads</a>
+      <a href="/" target="_blank" class="admin-nav-link">Public Site ↗</a>
+      <a href="/admin/logout" class="admin-nav-link admin-logout">Logout</a>
+    </div>
+  </div>
+</nav>

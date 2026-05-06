@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="admin-body">
+  <%- include('../partials/admin-nav', { active: 'leads' }) %>
+
+  <main class="admin-main">
+    <div class="admin-container">
+      <div class="admin-page-header">
+        <div>
+          <a href="/admin/leads" class="back-link">&larr; All Leads</a>
+          <h1>Lead #<%= lead.id %></h1>
+          <p><%= lead.trade %> &middot; <%= lead.postcode %> &middot; <span class="urgency-badge urgency-<%= lead.urgency ? lead.urgency.toLowerCase().replace(/\s/g,'-') : 'flexible' %>"><%= lead.urgency %></span></p>
+        </div>
+        <div class="lead-header-actions">
+          <span class="status-badge status-<%= lead.status ? lead.status.toLowerCase().replace(/\s+/g,'-') : 'new' %> status-lg"><%= lead.status %></span>
+        </div>
+      </div>
+
+      <% if (message) { %>
+        <div class="alert alert-success"><%= decodeURIComponent(message).replace(/\+/g, ' ') %></div>
+      <% } %>
+
+      <!-- Webhook Actions -->
+      <div class="webhook-actions">
+        <form action="/admin/leads/<%= lead.id %>/webhook" method="POST" style="display:inline">
+          <button type="submit" class="btn btn-secondary">Send to n8n</button>
+        </form>
+        <form action="/admin/leads/<%= lead.id %>/agent-zero" method="POST" style="display:inline">
+          <button type="submit" class="btn btn-secondary">Send to Agent Zero</button>
+        </form>
+        <form action="/admin/leads/<%= lead.id %>/voice-call" method="POST" style="display:inline">
+          <button type="submit" class="btn btn-secondary">Trigger Voice Call</button>
+        </form>
+        <form action="/admin/leads/<%= lead.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this lead permanently?')">
+          <button type="submit" class="btn btn-danger">Delete Lead</button>
+        </form>
+      </div>
+
+      <div class="lead-detail-grid">
+        <!-- Lead Info -->
+        <div class="lead-section">
+          <h2>Lead Details</h2>
+          <div class="detail-list">
+            <div class="detail-row"><span class="detail-label">Trade</span><span class="detail-value"><%= lead.trade %></span></div>
+            <div class="detail-row"><span class="detail-label">Postcode</span><span class="detail-value"><%= lead.postcode %></span></div>
+            <div class="detail-row"><span class="detail-label">Urgency</span><span class="detail-value"><%= lead.urgency %></span></div>
+            <div class="detail-row"><span class="detail-label">Source</span><span class="detail-value"><%= lead.source %></span></div>
+            <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value"><%= new Date(lead.created_at).toLocaleString('en-GB') %></span></div>
+            <div class="detail-row"><span class="detail-label">Updated</span><span class="detail-value"><%= new Date(lead.updated_at).toLocaleString('en-GB') %></span></div>
+          </div>
+
+          <h3 style="margin-top:1.5rem">Job Description</h3>
+          <div class="detail-block"><%= lead.job_description %></div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="lead-section">
+          <h2>Customer</h2>
+          <div class="detail-list">
+            <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value"><%= lead.customer_name %></span></div>
+            <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value"><a href="tel:<%= lead.phone %>"><%= lead.phone %></a></span></div>
+            <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value"><%= lead.email || '—' %></span></div>
+            <div class="detail-row"><span class="detail-label">Preferred Contact</span><span class="detail-value"><%= lead.preferred_contact_method || '—' %></span></div>
+            <div class="detail-row"><span class="detail-label">Callback Time</span><span class="detail-value"><%= lead.preferred_callback_time || '—' %></span></div>
+          </div>
+        </div>
+
+        <!-- AI Data -->
+        <div class="lead-section">
+          <h2>AI &amp; Voice Data</h2>
+          <div class="detail-list">
+            <div class="detail-row"><span class="detail-label">Lead Quality</span><span class="detail-value"><%= lead.lead_quality || '—' %></span></div>
+            <div class="detail-row"><span class="detail-label">Missing Details</span><span class="detail-value"><%= lead.missing_details || '—' %></span></div>
+          </div>
+          <% if (lead.ai_summary) { %>
+            <h3 style="margin-top:1rem">AI Summary</h3>
+            <div class="detail-block"><%= lead.ai_summary %></div>
+          <% } %>
+          <% if (lead.transcript) { %>
+            <h3 style="margin-top:1rem">Voice Transcript</h3>
+            <div class="detail-block detail-transcript"><%= lead.transcript %></div>
+          <% } %>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="lead-section lead-section-full">
+          <h2>Edit Lead</h2>
+          <form action="/admin/leads/<%= lead.id %>/edit" method="POST" class="form">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-control">
+                  <% LEAD_STATUSES.forEach(s => { %>
+                    <option value="<%= s %>" <%= lead.status === s ? 'selected' : '' %>><%= s %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Lead Quality</label>
+                <select name="lead_quality" class="form-control">
+                  <option value="" <%= !lead.lead_quality ? 'selected' : '' %>>— Not set —</option>
+                  <option value="high" <%= lead.lead_quality === 'high' ? 'selected' : '' %>>High</option>
+                  <option value="medium" <%= lead.lead_quality === 'medium' ? 'selected' : '' %>>Medium</option>
+                  <option value="low" <%= lead.lead_quality === 'low' ? 'selected' : '' %>>Low</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Trade</label>
+                <input type="text" name="trade" class="form-control" value="<%= lead.trade %>" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Postcode</label>
+                <input type="text" name="postcode" class="form-control" value="<%= lead.postcode %>" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Urgency</label>
+                <input type="text" name="urgency" class="form-control" value="<%= lead.urgency %>" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Customer Name</label>
+                <input type="text" name="customer_name" class="form-control" value="<%= lead.customer_name %>" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input type="text" name="phone" class="form-control" value="<%= lead.phone %>" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="text" name="email" class="form-control" value="<%= lead.email || '' %>" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Job Description</label>
+              <textarea name="job_description" class="form-control" rows="3"><%= lead.job_description %></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">AI Summary</label>
+              <textarea name="ai_summary" class="form-control" rows="3"><%= lead.ai_summary || '' %></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Preferred Contact</label>
+                <input type="text" name="preferred_contact_method" class="form-control" value="<%= lead.preferred_contact_method || '' %>" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Callback Time</label>
+                <input type="text" name="preferred_callback_time" class="form-control" value="<%= lead.preferred_callback_time || '' %>" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Internal Notes</label>
+              <textarea name="notes" class="form-control" rows="4" placeholder="Add internal notes here..."><%= lead.notes || '' %></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,80 @@
+{
+  "name": "2. Tradesperson Enquiry - Ringatrade",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "new-tradesperson",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook: Tradesperson",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "ringatrade-tradesperson"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "business_name",
+              "value": "={{$json.body.business_name}}"
+            },
+            {
+              "name": "contact_name",
+              "value": "={{$json.body.contact_name}}"
+            },
+            {
+              "name": "trade",
+              "value": "={{$json.body.trade}}"
+            },
+            {
+              "name": "phone",
+              "value": "={{$json.body.phone}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Parse Enquiry",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {},
+      "id": "3",
+      "name": "NoOp (Send Admin Alert Email/SMS)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Tradesperson": {
+      "main": [
+        [
+          {
+            "node": "Parse Enquiry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Enquiry": {
+      "main": [
+        [
+          {
+            "node": "NoOp (Send Admin Alert Email/SMS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

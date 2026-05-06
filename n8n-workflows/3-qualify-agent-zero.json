@@ -1,0 +1,91 @@
+{
+  "name": "3. Qualify with Agent Zero - Ringatrade",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "agent-zero-qualify",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook: Agent Zero Qualify",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "ringatrade-agent-zero"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "lead_id",
+              "value": "={{$json.body.lead.id}}"
+            },
+            {
+              "name": "job_description",
+              "value": "={{$json.body.lead.job_description}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Prepare LLM Prompt",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {},
+      "id": "3",
+      "name": "NoOp (Connect OpenAI/Agent Zero here)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {},
+      "id": "4",
+      "name": "NoOp (HTTP POST to /api/update-lead-status)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Agent Zero Qualify": {
+      "main": [
+        [
+          {
+            "node": "Prepare LLM Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare LLM Prompt": {
+      "main": [
+        [
+          {
+            "node": "NoOp (Connect OpenAI/Agent Zero here)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NoOp (Connect OpenAI/Agent Zero here)": {
+      "main": [
+        [
+          {
+            "node": "NoOp (HTTP POST to /api/update-lead-status)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

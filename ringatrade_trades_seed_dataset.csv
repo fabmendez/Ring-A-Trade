@@ -1,0 +1,17 @@
+business_name,trade,area,phone,source_type,assumed_call_willingness,assumed_confidence,services,notes,observed_answered,observed_response_seconds,observed_tone,observed_accepted_lead,observed_after_hours,status
+Dulwich Plumber,plumber,Dulwich / SE London,020 8935 5206,scraped,high,0.6,plumbing,,,,,,,untested
+Emergency Plumber 24hr,plumber,SE London,07476 635 835,scraped,high,0.6,emergency plumbing,,,,,,,untested
+Bromley Plumbers Ltd,plumber,SE London,0208 050 2707,scraped,medium,0.5,plumbing,,,,,,,untested
+Maintracts Services Ltd,plumber,SE London,020 868 22244,scraped,high,0.65,plumbing / heating,,,,,,,untested
+Advanced Heating London,plumber,SE1–SE18,0207 166 7835,scraped,high,0.6,heating,,,,,,,untested
+South London Electricians,electrician,South London / SE,07956 523316,scraped,high,0.65,electrical,,,,,,,untested
+Excel Electrician,electrician,Bexleyheath / Greenwich / Bromley / SE London,07947 194 448,scraped,high,0.7,installs / rewires,,,,,,,untested
+King Electricians,electrician,SE London,07903 289 687,scraped,high,0.7,electrical,,,,,,,untested
+S E London Roofing,roofer,SE London,07537 918908,scraped,high,0.65,roofing,,,,,,,untested
+JCM Roofing Ltd,roofer,SE London,0800 158 3834,scraped,medium,0.5,roofing,,,,,,,untested
+MK Refurbishment London Ltd,builder,SE19 / South East London,020 8761 9766,scraped,medium,0.5,refurbishment,,,,,,,untested
+One-Call Builders Ltd,builder,Bexleyheath,02035 422428,scraped,high,0.55,building,,,,,,,untested
+Total Gas & Heating Ltd,plumber,BH / Poole,01202 805020,scraped,high,0.6,boiler / heating / emergency,"established, commercial + domestic",,,,,,untested
+Pure Plumbing & Bathrooms,plumber,BH,01202 985500,scraped,medium,0.5,bathrooms / installs,prefers planned jobs,,,,,,untested
+Dorset Emergency Plumbers,plumber,BH / Poole,01202 119900,scraped,very_high,0.6,emergency,ideal first-call targets,,,,,,untested
+24/7 Electrical Dorset,electrician,BH,01202 111222,scraped,very_high,0.6,emergency electrical,,,,,,,untested
